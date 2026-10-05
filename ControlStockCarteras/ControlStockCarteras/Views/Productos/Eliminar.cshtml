@@ -1,0 +1,29 @@
+﻿@model ControlStockCarteras.ViewModels.ProductoVM
+
+@{
+    ViewData["Title"] = "Eliminar producto";
+}
+
+<h1>Eliminar producto</h1>
+<h3 class="text-danger">¿Seguro que querés eliminar este producto?</h3>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+<dl class="row">
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Nombre)</dt>
+    <dd class="col-sm-9">@Model.Nombre</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Color)</dt>
+    <dd class="col-sm-9">@Model.Color</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CategoriaId)</dt>
+    <dd class="col-sm-9">@Model.CategoriaNombre</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.StockActual)</dt>
+    <dd class="col-sm-9">@Model.StockActual</dd>
+</dl>
+
+<form asp-action="Eliminar" asp-route-id="@Model.Id" method="post">
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

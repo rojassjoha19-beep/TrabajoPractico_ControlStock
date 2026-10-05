@@ -1,0 +1,36 @@
+﻿@model IEnumerable<ControlStockCarteras.ViewModels.ProductoVM>
+
+@{
+    ViewData["Title"] = "Productos";
+}
+
+<h1>Productos</h1>
+
+<a asp-action="Crear" class="btn btn-primary mb-3">Nuevo producto</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Color</th>
+            <th>Categoría</th>
+            <th>Stock actual</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.Nombre</td>
+                <td>@p.Color</td>
+                <td>@p.CategoriaNombre</td>
+                <td>@p.StockActual</td>
+                <td>
+                    <a asp-action="Editar" asp-route-id="@p.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                    <a asp-action="Eliminar" asp-route-id="@p.Id" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
