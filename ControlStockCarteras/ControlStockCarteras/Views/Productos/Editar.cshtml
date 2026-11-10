@@ -36,11 +36,12 @@
         <span asp-validation-for="CategoriaId" class="text-danger"></span>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="StockActual" class="form-label"></label>
-        <input asp-for="StockActual" class="form-control" />
-        <span asp-validation-for="StockActual" class="text-danger"></span>
-    </div>
+   <div class="mb-3">
+    <label asp-for="StockActual" class="form-label"></label>
+    <input asp-for="StockActual" class="form-control" readonly />
+    <div class="form-text">El stock actual solo cambia al registrar movimientos.</div>
+    <span asp-validation-for="StockActual" class="text-danger"></span>
+</div>
     <div class="mb-3">
         <label asp-for="StockMinimo" class="form-label"></label>
         <input asp-for="StockMinimo" class="form-control" />

@@ -16,20 +16,26 @@ namespace ControlStockCarteras.ViewModels
 
         [Required(ErrorMessage = "Campo obligatorio.")]
         [Range(0, int.MaxValue, ErrorMessage = "No puede ser negativo.")]
+        [Display(Name = "Stock actual")]
         public int StockActual { get; set; }
 
         [Required(ErrorMessage = "Campo obligatorio.")]
         [Range(0, int.MaxValue, ErrorMessage = "No puede ser negativo.")]
+
+        [Display(Name = "Stock mínimo")]
         public int StockMinimo { get; set; }
 
         [Required(ErrorMessage = "Campo obligatorio.")]
         [Range(0, int.MaxValue, ErrorMessage = "No puede ser negativo.")]
+        [Display(Name = "Stock máximo")]
         public int StockMaximo { get; set; }
 
         [Required(ErrorMessage = "Campo obligatorio.")]
         [Range(0.01, 100000000, ErrorMessage = "El precio debe ser mayor a 0.")]
         public decimal Precio { get; set; }
         [Range(1, int.MaxValue, ErrorMessage = "Seleccioná una categoría.")]
+
+        [Display(Name = "Categoría")]
         public int CategoriaId { get; set; }
         public string? CategoriaNombre { get; set; }
         public List<SelectListItem> Categorias { get; set; } = new();

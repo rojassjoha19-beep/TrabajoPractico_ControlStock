@@ -1,46 +1,40 @@
-﻿using ControlStockCarteras.Data;
-using ControlStockCarteras.Models;
-using ControlStockCarteras.Repositories;
+﻿using ControlStockCarteras.Datos.Modelos;
+using ControlStockCarteras.Datos.Repositorios;
 using ControlStockCarteras.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-
 
 namespace ControlStockCarteras.Controllers
 {
     [Authorize]
     public class ProductosController : Controller
     {
-        private readonly IProductoRepository _repositorio;
-        private readonly ApplicationDbContext _contexto;
+        private readonly IProductoRepositorio _productos;
+        private readonly ICategoriaRepositorio _categorias;
 
-        public ProductosController(IProductoRepository repositorio, ApplicationDbContext contexto)
+        public ProductosController(IProductoRepositorio productos, ICategoriaRepositorio categorias)
         {
-            _repositorio = repositorio;
-            _contexto = contexto;
-        }
-        public async Task<IActionResult> Index()
-        {
-            var productos = await _contexto.Productos
-                .Select(p => new ProductoVM
-                {
-                    Id = p.Id,
-                    Nombre = p.Nombre,
-                    Color = p.Color,
-                    StockActual = p.StockActual,
-                    StockMinimo = p.StockMinimo,
-                    StockMaximo = p.StockMaximo,
-                    Precio = p.Precio,
-                    CategoriaId = p.CategoriaId,
-                    CategoriaNombre = p.Categoria!.Nombre
-                })
-                .ToListAsync();
-
-            return View(productos);
+            _productos = productos;
+            _categorias = categorias;
         }
 
+        public IActionResult Index()
+        {
+            var lista = _productos.ObtenerTodos()
+                .Select(p => ArmarVM(p))
+                .ToList();
+            return View(lista);
+        }
+
+        public IActionResult Detalle(int id)
+        {
+            var producto = _productos.ObtenerPorId(id);
+            if (producto == null || !producto.Activo) return NotFound();
+            return View(ArmarVM(producto));
+        }
+
+        [Authorize(Roles = "Administrador")]
         public IActionResult Crear()
         {
             var vm = new ProductoVM { Categorias = ObtenerCategorias() };
@@ -49,81 +43,116 @@ namespace ControlStockCarteras.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Crear(ProductoVM vm)
         {
             ValidarStock(vm);
+            if (_productos.ExisteDuplicado(0, vm.Nombre, vm.Color))
+            {
+                ModelState.AddModelError("", "Ya existe un producto con ese nombre y color.");
+            }
             if (!ModelState.IsValid)
             {
                 vm.Categorias = ObtenerCategorias();
                 return View(vm);
             }
-            if (ExisteDuplicado(0, vm.Nombre, vm.Color))
+
+            try
             {
-                ModelState.AddModelError("", "Ya existe");
+                _productos.Agregar(ArmarProducto(vm));
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "No se pudo guardar el producto. Intentá nuevamente.");
                 vm.Categorias = ObtenerCategorias();
                 return View(vm);
             }
-
-            var producto = new Producto
-            {
-                Nombre = vm.Nombre,
-                Color = vm.Color,
-                StockActual = vm.StockActual,
-                StockMinimo = vm.StockMinimo,
-                StockMaximo = vm.StockMaximo,
-                Precio = vm.Precio,
-                CategoriaId = vm.CategoriaId
-            };
-
-            bool resultado = _repositorio.AgregarProducto(producto);
-            if (!resultado)
-            {
-                ModelState.AddModelError("", "No se puede guardar el producto");
-                vm.Categorias = ObtenerCategorias();
-                return View(vm);
-            }
-
-            return RedirectToAction(nameof(Index));
         }
-
-      
+        
+        [Authorize(Roles = "Administrador")]
         public IActionResult Editar(int id)
         {
-            var producto = _repositorio.ObtenerProductoPorId(id);
-            if (producto == null) return NotFound();
+            var producto = _productos.ObtenerPorId(id);
+            if (producto == null || !producto.Activo) return NotFound();
 
-            var vm = new ProductoVM
-            {
-                Id = producto.Id,
-                Nombre = producto.Nombre,
-                Color = producto.Color,
-                StockActual = producto.StockActual,
-                StockMinimo = producto.StockMinimo,
-                StockMaximo = producto.StockMaximo,
-                Precio = producto.Precio,
-                CategoriaId = producto.CategoriaId,
-                Categorias = ObtenerCategorias()
-            };
+            var vm = ArmarVM(producto);
+            vm.Categorias = ObtenerCategorias();
             return View(vm);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Editar(ProductoVM vm)
         {
             ValidarStock(vm);
+            if (_productos.ExisteDuplicado(vm.Id, vm.Nombre, vm.Color))
+            {
+                ModelState.AddModelError("", "Ya existe un producto con ese nombre y color.");
+            }
             if (!ModelState.IsValid)
             {
                 vm.Categorias = ObtenerCategorias();
                 return View(vm);
             }
-            if (ExisteDuplicado(vm.Id, vm.Nombre, vm.Color))
+
+            try
             {
-                ModelState.AddModelError("", "Ya existe ese producto");
+                _productos.Modificar(ArmarProducto(vm));
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "No se pudo actualizar el producto. Intentá nuevamente.");
                 vm.Categorias = ObtenerCategorias();
                 return View(vm);
             }
-            var producto = new Producto
+        }
+        
+        [Authorize(Roles = "Administrador")]
+        public IActionResult Eliminar(int id)
+        {
+            var producto = _productos.ObtenerPorId(id);
+            if (producto == null || !producto.Activo) return NotFound();
+            return View(ArmarVM(producto));
+        }
+
+        [HttpPost, ActionName("Eliminar")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
+        public IActionResult EliminarConfirmado(int id)
+        {
+            _productos.DarDeBaja(id);
+            return RedirectToAction(nameof(Index));
+        }
+
+        private List<SelectListItem> ObtenerCategorias()
+        {
+            return _categorias.ObtenerTodas()
+                .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Nombre })
+                .ToList();
+        }
+
+        private static ProductoVM ArmarVM(Producto p)
+        {
+            return new ProductoVM
+            {
+                Id = p.Id,
+                Nombre = p.Nombre,
+                Color = p.Color,
+                StockActual = p.StockActual,
+                StockMinimo = p.StockMinimo,
+                StockMaximo = p.StockMaximo,
+                Precio = p.Precio,
+                CategoriaId = p.CategoriaId,
+                CategoriaNombre = p.Categoria?.Nombre ?? ""
+            };
+        }
+
+        private static Producto ArmarProducto(ProductoVM vm)
+        {
+            return new Producto
             {
                 Id = vm.Id,
                 Nombre = vm.Nombre,
@@ -134,78 +163,21 @@ namespace ControlStockCarteras.Controllers
                 Precio = vm.Precio,
                 CategoriaId = vm.CategoriaId
             };
-
-            bool resultado = _repositorio.ActualizarProducto(producto);
-            if (!resultado)
-            {
-                ModelState.AddModelError("", "No se pudo actualizar el producto. Intentá nuevamente.");
-                vm.Categorias = ObtenerCategorias();
-                return View(vm);
-            }
-
-            return RedirectToAction(nameof(Index));
         }
 
-      
-        public IActionResult Eliminar(int id)
-        {
-            var producto = _repositorio.ObtenerProductoPorId(id);
-            if (producto == null) return NotFound();
-
-            var vm = new ProductoVM
-            {
-                Id = producto.Id,
-                Nombre = producto.Nombre,
-                Color = producto.Color,
-                StockActual = producto.StockActual,
-                StockMinimo = producto.StockMinimo,
-                StockMaximo = producto.StockMaximo,
-                Precio = producto.Precio,
-                CategoriaId = producto.CategoriaId,
-                CategoriaNombre = _contexto.Categorias
-                    .Where(c => c.Id == producto.CategoriaId)
-                    .Select(c => c.Nombre)
-                    .FirstOrDefault()
-            };
-
-            return View(vm);
-        }
-        [HttpPost, ActionName("Eliminar")]
-        [ValidateAntiForgeryToken]
-        public IActionResult EliminarConfirmado(int id)
-        {
-            _repositorio.BorrarProducto(id);
-            return RedirectToAction(nameof(Index));
-        }
-
-        private List<SelectListItem> ObtenerCategorias()
-        {
-            return _contexto.Categorias
-                .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Nombre })
-                .ToList();
-        }
-        private bool ExisteDuplicado(int id, string nombre, string color)
-        {
-            nombre = nombre.Trim();
-            color = color.Trim();
-            return _contexto.Productos
-                .Any(p => p.Id != id && p.Nombre == nombre && p.Color == color);
-        }
         private void ValidarStock(ProductoVM vm)
         {
             if (vm.StockMinimo > vm.StockMaximo)
             {
-                ModelState.AddModelError("StockMinimo", "NO puede ser mayor al stock máximo.");
+                ModelState.AddModelError("StockMinimo", "No puede ser mayor al stock máximo.");
             }
-
             if (vm.StockActual < vm.StockMinimo)
             {
-                ModelState.AddModelError("StockActual", "NO puede ser menor al stock mínimo.");
+                ModelState.AddModelError("StockActual", "No puede ser menor al stock mínimo.");
             }
-
             if (vm.StockActual > vm.StockMaximo)
             {
-                ModelState.AddModelError("StockActual", "NO puede ser mayor al stock máximo.");
+                ModelState.AddModelError("StockActual", "No puede ser mayor al stock máximo.");
             }
         }
     }

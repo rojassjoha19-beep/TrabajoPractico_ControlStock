@@ -1,0 +1,37 @@
+﻿@model ControlStockCarteras.ViewModels.ProductoVM
+
+@{
+    ViewData["Title"] = "Detalle del producto";
+}
+
+<h1>Detalle del producto</h1>
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-3">Nombre</dt>
+        <dd class="col-sm-9">@Model.Nombre</dd>
+
+        <dt class="col-sm-3">Color</dt>
+        <dd class="col-sm-9">@Model.Color</dd>
+
+        <dt class="col-sm-3">Categoría</dt>
+        <dd class="col-sm-9">@Model.CategoriaNombre</dd>
+
+        <dt class="col-sm-3">Precio</dt>
+        <dd class="col-sm-9">$ @Model.Precio.ToString("N2")</dd>
+
+        <dt class="col-sm-3">Stock actual</dt>
+        <dd class="col-sm-9">@Model.StockActual</dd>
+
+        <dt class="col-sm-3">Stock mínimo</dt>
+        <dd class="col-sm-9">@Model.StockMinimo</dd>
+
+        <dt class="col-sm-3">Stock máximo</dt>
+        <dd class="col-sm-9">@Model.StockMaximo</dd>
+    </dl>
+</div>
+
+<div>
+    <a asp-action="Editar" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
+    <a asp-action="Index" class="btn btn-secondary">Volver al listado</a>
+</div>

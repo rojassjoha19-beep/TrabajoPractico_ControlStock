@@ -1,24 +1,37 @@
-using ControlStockCarteras.Data;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using ControlStockCarteras.Datos.Contexto;
+using ControlStockCarteras.Datos.Repositorios;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var cadenaConexion = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("No se encontró la cadena de conexión 'DefaultConnection'.");
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<ContextoStock>(opciones =>
+    opciones.UseSqlServer(cadenaConexion));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<ControlStockCarteras.Repositories.IProductoRepository,
-                           ControlStockCarteras.Repositories.ProductoRepository>();
+builder.Services.AddAuthentication(opciones =>
+{
+    opciones.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    opciones.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+.AddCookie(opciones =>
+{
+    opciones.AccessDeniedPath = "/Sesion/AccesoDenegado";
+})
+.AddGoogle(GoogleDefaults.AuthenticationScheme, opciones =>
+{
+    opciones.ClientId = builder.Configuration.GetSection("GoogleKeys:ClientId").Value!;
+    opciones.ClientSecret = builder.Configuration.GetSection("GoogleKeys:ClientSecret").Value!;
+});
+builder.Services.AddScoped<IProductoRepositorio, ProductoRepositorio>();
+builder.Services.AddScoped<ICategoriaRepositorio, CategoriaRepositorio>();
+builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
 
 var app = builder.Build();
 
@@ -34,7 +47,6 @@ else
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -44,7 +56,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
-app.MapRazorPages();
 
 app.Run();

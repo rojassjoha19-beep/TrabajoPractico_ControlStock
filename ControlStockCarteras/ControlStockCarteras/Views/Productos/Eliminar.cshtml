@@ -1,11 +1,11 @@
 ﻿@model ControlStockCarteras.ViewModels.ProductoVM
 
 @{
-    ViewData["Title"] = "Eliminar producto";
+    ViewData["Title"] = "Dar de baja producto";
 }
 
-<h1>Eliminar producto</h1>
-<h3 class="text-danger">¿Seguro que querés eliminar este producto?</h3>
+<h1>Dar de baja producto</h1>
+<h3 class="text-danger">¿Seguro que querés dar de baja este producto?</h3>
 
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -24,6 +24,6 @@
 </dl>
 
 <form asp-action="Eliminar" asp-route-id="@Model.Id" method="post">
-    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <button type="submit" class="btn btn-danger">Dar de baja</button>
     <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
 </form>

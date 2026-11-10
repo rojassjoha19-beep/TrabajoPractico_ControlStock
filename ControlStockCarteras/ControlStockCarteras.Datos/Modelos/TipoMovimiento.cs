@@ -1,5 +1,4 @@
-﻿namespace ControlStockCarteras.Models
-{
+﻿namespace ControlStockCarteras.Datos.Modelos;
     public enum TipoMovimiento
     {
         Entrada= 1,
@@ -7,4 +6,4 @@
         Ajuste = 3,
 
     }
-}
+

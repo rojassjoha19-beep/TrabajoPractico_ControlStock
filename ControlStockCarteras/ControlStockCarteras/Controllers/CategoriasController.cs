@@ -1,33 +1,38 @@
-﻿using ControlStockCarteras.Data;
-using ControlStockCarteras.Models;
+﻿using ControlStockCarteras.Datos.Modelos;
+using ControlStockCarteras.Datos.Repositorios;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ControlStockCarteras.Controllers
 {
+    [Authorize(Roles = "Administrador")]
     public class CategoriasController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICategoriaRepositorio _categorias;
 
-        public CategoriasController(ApplicationDbContext context)
+        public CategoriasController(ICategoriaRepositorio categorias)
         {
-            _context = context;
+            _categorias = categorias;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var categorias = await _context.Categorias.ToListAsync();
-            return View(categorias);
+            return View(_categorias.ObtenerTodas());
         }
-
+        [Authorize(Roles = "Administrador")]
         public IActionResult Crear()
         {
             return View(new Categoria());
         }
+
         [HttpPost]
-        public async Task<IActionResult> Crear(Categoria categoria)
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
+        public IActionResult Crear(Categoria categoria)
         {
-            if (ExisteDuplicado(0, categoria.Nombre))
+            if (!string.IsNullOrWhiteSpace(categoria.Nombre)
+                && _categorias.ExisteDuplicado(0, categoria.Nombre))
             {
                 ModelState.AddModelError("Nombre", "Ya existe una categoría con ese nombre.");
             }
@@ -37,18 +42,17 @@ namespace ControlStockCarteras.Controllers
                 return View(categoria);
             }
 
-            categoria.Nombre = categoria.Nombre.Trim();
-
-            _context.Categorias.Add(categoria);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-            private bool ExisteDuplicado(int id, string nombre)
-        {
-            nombre = nombre.Trim();
-
-            return _context.Categorias
-                .Any(c => c.Id != id && c.Nombre == nombre);
+            try
+            {
+                categoria.Nombre = categoria.Nombre.Trim();
+                _categorias.Agregar(categoria);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "No se pudo guardar la categoría. Intentá nuevamente.");
+                return View(categoria);
+            }
         }
     }
 }
