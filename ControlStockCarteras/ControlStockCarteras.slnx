@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="ControlStockCarteras.Datos/ControlStockCarteras.Datos.csproj" Id="0fb16b46-3ac2-423d-b49c-4b4a5ae145ac" />
   <Project Path="ControlStockCarteras/ControlStockCarteras.csproj" />
 </Solution>

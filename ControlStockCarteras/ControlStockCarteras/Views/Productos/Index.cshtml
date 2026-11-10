@@ -26,10 +26,11 @@
                 <td>@p.Color</td>
                 <td>@p.CategoriaNombre</td>
                 <td>@p.StockActual</td>
-                <td>
-                    <a asp-action="Editar" asp-route-id="@p.Id" class="btn btn-sm btn-outline-primary">Editar</a>
-                    <a asp-action="Eliminar" asp-route-id="@p.Id" class="btn btn-sm btn-outline-danger">Eliminar</a>
-                </td>
+             <td>
+    <a asp-action="Detalle" asp-route-id="@p.Id" class="btn btn-sm btn-outline-secondary">Detalle</a>
+    <a asp-action="Editar" asp-route-id="@p.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+  <a asp-action="Eliminar" asp-route-id="@p.Id" class="btn btn-sm btn-outline-danger">Dar de baja</a>
+</td>
             </tr>
         }
     </tbody>

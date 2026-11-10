@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
-namespace ControlStockCarteras.Models
+namespace ControlStockCarteras.Datos.Modelos
 {
     public class Categoria
     {
