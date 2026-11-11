@@ -33,9 +33,8 @@ La URI de redireccionamiento autorizada en Google Cloud es
 Mientras la aplicación de Google esté en modo de prueba, solo pueden ingresar los correos agregados como usuarios de prueba.
 
 3. Ejecutar
-
-Abrir la solución en Visual Studio y ejecutar el proyecto web.
-
+### 3. Ejecutar
+Abrir la solución en Visual Studio, establecer ControlStockCarteras, el proyecto web, como proyecto de inicio y ejecutar.
 Roles y permisos
 - Administrador: todo (productos, categorías y movimientos: alta, edición y baja).
 - Empleado: ver productos y categorías, y registrar movimientos de stock.
