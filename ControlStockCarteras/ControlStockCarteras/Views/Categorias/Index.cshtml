@@ -6,8 +6,10 @@
 
 <h1>Categorías</h1>
 
-<a asp-action="Crear" class="btn btn-primary mb-3">Nueva categoría</a>
-
+@if (User.IsInRole("Administrador"))
+{
+    <a asp-action="Crear" class="btn btn-primary mb-3">Nueva categoría</a>
+}
 <table class="table">
     <thead>
         <tr>
