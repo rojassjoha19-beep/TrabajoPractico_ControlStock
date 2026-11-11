@@ -1,0 +1,33 @@
+﻿@model IEnumerable<ControlStockCarteras.Datos.Modelos.MovimientoStock>
+
+@{
+    ViewData["Title"] = "Movimientos de stock";
+}
+
+<h1>Movimientos de stock</h1>
+
+<a asp-action="Registrar" class="btn btn-primary mb-3">Registrar movimiento</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Producto</th>
+            <th>Tipo</th>
+            <th>Cantidad</th>
+            <th>Usuario (Id)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var m in Model)
+        {
+            <tr>
+                <td>@m.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@m.Producto?.Nombre @m.Producto?.Color</td>
+                <td>@m.Tipo</td>
+                <td>@m.Cantidad</td>
+                <td>@m.UsuarioId</td>
+            </tr>
+        }
+    </tbody>
+</table>

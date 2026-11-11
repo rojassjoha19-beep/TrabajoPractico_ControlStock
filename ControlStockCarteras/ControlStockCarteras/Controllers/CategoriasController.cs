@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ControlStockCarteras.Controllers
 {
-    [Authorize(Roles = "Administrador")]
+    [Authorize]
     public class CategoriasController : Controller
     {
         private readonly ICategoriaRepositorio _categorias;
