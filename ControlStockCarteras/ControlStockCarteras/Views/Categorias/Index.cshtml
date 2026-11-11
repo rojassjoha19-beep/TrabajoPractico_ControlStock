@@ -1,19 +1,13 @@
-﻿@model IEnumerable<ControlStockCarteras.Datos.Modelos.Categoria>
-
-@{
-    ViewData["Title"] = "Categorías";
-}
-
-<h1>Categorías</h1>
-
-@if (User.IsInRole("Administrador"))
+﻿@if (TempData["Error"] != null)
 {
-    <a asp-action="Crear" class="btn btn-primary mb-3">Nueva categoría</a>
+    <div class="alert alert-danger">@TempData["Error"]</div>
 }
+
 <table class="table">
     <thead>
         <tr>
             <th>Nombre</th>
+            <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
@@ -21,6 +15,14 @@
         {
             <tr>
                 <td>@c.Nombre</td>
+                <td>
+                    <a asp-action="Detalle" asp-route-id="@c.Id" class="btn btn-sm btn-outline-secondary">Detalle</a>
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <a asp-action="Editar" asp-route-id="@c.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                        <a asp-action="Eliminar" asp-route-id="@c.Id" class="btn btn-sm btn-outline-danger">Dar de baja</a>
+                    }
+                </td>
             </tr>
         }
     </tbody>

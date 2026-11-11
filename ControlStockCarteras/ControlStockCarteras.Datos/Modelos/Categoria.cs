@@ -7,7 +7,7 @@ namespace ControlStockCarteras.Datos.Modelos
         [Required(ErrorMessage = "Campo obligatorio.")]
         [StringLength(50, ErrorMessage = "El nombre no puede superar los 50 caracteres.")]
         public string Nombre { get; set; } = "";
-
+        public bool Activo { get; set; } = true;
         public List<Producto> Productos { get; set; } = new();
     }
 }

@@ -13,5 +13,10 @@ namespace ControlStockCarteras.Datos.Repositorios
         List<Categoria> ObtenerTodas();
         void Agregar(Categoria categoria);
         bool ExisteDuplicado(int id, string nombre);
+        Categoria? ObtenerPorId(int id);
+        void Modificar(Categoria categoria);
+        void DarDeBaja(int id);
+
+
     }
 }
