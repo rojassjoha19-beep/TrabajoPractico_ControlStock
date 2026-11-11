@@ -7,8 +7,7 @@
         public Producto? Producto { get; set; }
 
         public int Cantidad { get; set; }
-        public int TipoMovimientoId { get; set; }
-        public TipoMovimiento? TipoMovimiento { get; set; }
+        public TipoMovimiento Tipo { get; set; }
         public DateTime Fecha { get; set; } = DateTime.Now;
 
         public string UsuarioId { get; set; } = null!;

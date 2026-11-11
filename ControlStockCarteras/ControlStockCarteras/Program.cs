@@ -32,6 +32,8 @@ builder.Services.AddAuthentication(opciones =>
 builder.Services.AddScoped<IProductoRepositorio, ProductoRepositorio>();
 builder.Services.AddScoped<ICategoriaRepositorio, CategoriaRepositorio>();
 builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
+builder.Services.AddScoped<IMovimientoRepositorio, MovimientoRepositorio>();
+
 
 var app = builder.Build();
 

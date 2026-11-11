@@ -100,10 +100,7 @@ namespace ControlStockCarteras.Datos.Migrations
                     b.Property<int>("ProductoId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TipoMovimiento")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TipoMovimientoId")
+                    b.Property<int>("Tipo")
                         .HasColumnType("int");
 
                     b.Property<string>("UsuarioId")
