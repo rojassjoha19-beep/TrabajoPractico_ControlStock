@@ -46,7 +46,7 @@ namespace ControlStockCarteras.Controllers
         [Authorize(Roles = "Administrador")]
         public IActionResult Crear(ProductoVM vm)
         {
-            ValidarStock(vm);
+            ValidarStock(vm, true);
             if (_productos.ExisteDuplicado(0, vm.Nombre, vm.Color))
             {
                 ModelState.AddModelError("", "Ya existe un producto con ese nombre y color.");
@@ -86,7 +86,7 @@ namespace ControlStockCarteras.Controllers
         [Authorize(Roles = "Administrador")]
         public IActionResult Editar(ProductoVM vm)
         {
-            ValidarStock(vm);
+            ValidarStock(vm, true);
             if (_productos.ExisteDuplicado(vm.Id, vm.Nombre, vm.Color))
             {
                 ModelState.AddModelError("", "Ya existe un producto con ese nombre y color.");
@@ -165,19 +165,22 @@ namespace ControlStockCarteras.Controllers
             };
         }
 
-        private void ValidarStock(ProductoVM vm)
+        private void ValidarStock(ProductoVM vm, bool esAlta)
         {
             if (vm.StockMinimo > vm.StockMaximo)
             {
                 ModelState.AddModelError("StockMinimo", "No puede ser mayor al stock máximo.");
             }
-            if (vm.StockActual < vm.StockMinimo)
+            if (esAlta)
             {
-                ModelState.AddModelError("StockActual", "No puede ser menor al stock mínimo.");
-            }
-            if (vm.StockActual > vm.StockMaximo)
-            {
-                ModelState.AddModelError("StockActual", "No puede ser mayor al stock máximo.");
+                if (vm.StockActual < vm.StockMinimo)
+                {
+                    ModelState.AddModelError("StockActual", "No puede ser menor al stock mínimo.");
+                }
+                if (vm.StockActual > vm.StockMaximo)
+                {
+                    ModelState.AddModelError("StockActual", "No puede ser mayor al stock máximo.");
+                }
             }
         }
     }

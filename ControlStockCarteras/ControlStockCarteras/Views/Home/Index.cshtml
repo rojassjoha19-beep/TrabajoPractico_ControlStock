@@ -1,8 +1,32 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-	<h1 class="display-4">Bienvenido a Control de Stock de Carteras</h1>
+<div class="hero">
+    <h1>Control de Stock</h1>
+    <p>Gestioná tus carteras, categorías y movimientos en un solo lugar</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <a asp-controller="Productos" asp-action="Index" class="tarjeta-inicio">
+            <i class="bi bi-bag"></i>
+            <h5>Productos</h5>
+            <span>Consultá y administrá tu catálogo</span>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a asp-controller="Categorias" asp-action="Index" class="tarjeta-inicio">
+            <i class="bi bi-tags"></i>
+            <h5>Categorías</h5>
+            <span>Organizá tus productos</span>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a asp-controller="Movimientos" asp-action="Index" class="tarjeta-inicio">
+            <i class="bi bi-arrow-left-right"></i>
+            <h5>Movimientos</h5>
+            <span>Entradas, salidas y ajustes de stock</span>
+        </a>
+    </div>
 </div>
