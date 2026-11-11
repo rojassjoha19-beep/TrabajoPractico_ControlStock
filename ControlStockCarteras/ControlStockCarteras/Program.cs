@@ -14,7 +14,13 @@ builder.Services.AddDbContext<ContextoStock>(opciones =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(opciones =>
+{
+    var mensajes = opciones.ModelBindingMessageProvider;
+    mensajes.SetValueMustBeANumberAccessor(campo => $"El campo {campo} debe ser un número.");
+    mensajes.SetAttemptedValueIsInvalidAccessor((valor, campo) => $"El valor '{valor}' no es válido para {campo}.");
+    mensajes.SetValueMustNotBeNullAccessor(campo => $"Debe completar el campo {campo}.");
+});
 builder.Services.AddAuthentication(opciones =>
 {
     opciones.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
